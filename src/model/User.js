@@ -12,7 +12,8 @@ const UserSchema = mongoose.Schema({
     {
       token: { type: String, required: true }
     }
-  ]
+  ],
+  resetPasswordToken: { type: String, unique: true }
 });
 
 // Hashing a password before saving it to db
