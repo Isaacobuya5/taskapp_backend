@@ -39,20 +39,23 @@ router.post("/tasks/fetch", auth, async (req, res) => {
 });
 
 // editting a task or marking as complete
-// router.put('/tasks/:id', async (req, res) => {
-//   const id = req.params.id;
+router.put("/tasks/:id", async (req, res) => {
+  console.log(req.body);
+  const { task, description, completed, username } = req.body;
+  try {
+    // find the user with the given id
+    const user = Task.findOne({ _id: req.params.id });
+    if (!user) {
+      throw new Error("Invalid user");
+    }
 
-//   const task = await Task.findById(id).exec();
-//   if (!task) return res.status(404).send('The task with the given ID was not found.');
-//   let query = {$set: {}};
-//   for (let key in req.body) {
-//     if (product[key] && product[key] !== req.body[key]) // if the field we have in req.body exists, we're gonna update it
-//        query.$set[key] = req.body[key];
-//   }
-//   const updatedProduct = await Task.updateOne({_id: id}, query}).exec();
-
-//   res.send(task);
-// });
+    await user.update({ completed: "true" });
+    res.status(201).json({ message: "Task marked succesfully." });
+  } catch (error) {
+    res.status(400).json({ error });
+    console.log(error);
+  }
+});
 
 // deleting a task
 router.delete("/tasks/:id", auth, async (req, res) => {
