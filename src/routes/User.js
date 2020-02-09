@@ -152,15 +152,15 @@ router.post("/users/forgot_password", async (req, res) => {
 });
 
 // create a new password
-router.get("/new_password/:token", async (req, res) => {
+router.get("/users/new_password/:token", async (req, res) => {
   const { token } = req.params;
-  console.log(req.params);
   try {
     // verify and decode the token
     const payload = await jwt.verify(token, process.env.PASSWORD_SECRET);
     console.log(payload);
 
     res.status(200).json({ message: "Succesfully accessed", payload });
+    return payload;
   } catch (error) {
     res.status(500).json({ error });
     console.log(error);
@@ -168,12 +168,13 @@ router.get("/new_password/:token", async (req, res) => {
 });
 
 // updating the password
-router.put("/new_password/create", async (req, res) => {
+router.put("/users/newpassword", async (req, res) => {
   console.log(req.body);
   const { email, password } = req.body;
   try {
     // find the user with the the given email
     const user = await User.find({ email });
+    console.log(user);
     if (!user) {
       throw new Error("Invalid user");
     }
