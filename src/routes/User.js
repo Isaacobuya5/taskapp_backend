@@ -19,8 +19,8 @@ let transporter = nodemailer.createTransport({
   host: "smtp.mailtrap.io",
   port: 2525,
   auth: {
-    user: "b05a5214417d23", //generate your mailtrap username and change
-    pass: "899104ff65c5fb" //generated your mail trap password and change
+    user: process.env.EMAIL_USER, //generate your mailtrap username and change
+    pass: process.env.EMAIL_PASSWORD //generated your mail trap password and change
   }
 });
 
@@ -49,7 +49,6 @@ function sendTokenToMail(userEmail, token) {
 
 // creating a new user
 router.post("/users", async (req, res) => {
-  console.log(req.body);
   const { username, email, password } = req.body;
   const newUser = new User({
     username,
@@ -81,7 +80,6 @@ router.get("/users", async (req, res) => {
 
 router.post("/users/login", async (req, res) => {
   // Login a registered user
-  console.log(req.body);
   const { email, password } = req.body;
   try {
     const user = await User.findByCredentials(email, password);
@@ -103,7 +101,6 @@ router.post("/users/login", async (req, res) => {
 
 // Logging out a user
 router.post("/users/logout", auth, async (req, res) => {
-  console.log(req.user.tokens);
   try {
     // filter user's tokens array and return true if any of the tokens is not equal to that which was used to login user
     req.user.tokens = req.user.tokens.filter(token => {
@@ -120,7 +117,6 @@ router.post("/users/logout", auth, async (req, res) => {
 // send a password link to email
 router.post("/users/forgot_password", async (req, res) => {
   const { email } = req.body;
-  console.log(req.body);
   try {
     // find user with the given email from the database
     const user = User.findOne({ email });
@@ -132,7 +128,6 @@ router.post("/users/forgot_password", async (req, res) => {
     const token = jwt.sign({ email }, process.env.PASSWORD_SECRET, {
       expiresIn: "1h"
     });
-    console.log(token);
 
     // save the new token in the user's database
     await user.update({
@@ -141,7 +136,6 @@ router.post("/users/forgot_password", async (req, res) => {
 
     // sending the token to the user's email
     await sendTokenToMail(email, token);
-    console.log("email sent");
     // send a succesful status
     res
       .status(200)
@@ -181,13 +175,6 @@ router.put("/users/newpassword", async (req, res) => {
 
     // encrypt tyhe provided password
     const encryptedPassword = await bcrypt.hash(password, 8);
-
-    // update the user's password
-    // await user.update({
-    //   password: encryptedPassword,
-    //   resetPasswordToken: null
-    // });
-    // console.log(user);
     await User.findOneAndUpdate(
       { email },
       { password: encryptedPassword, resetPasswordToken: null }

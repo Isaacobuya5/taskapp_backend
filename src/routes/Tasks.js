@@ -6,7 +6,6 @@ const auth = require("../middleware/middleware");
 
 // creating a new task
 router.post("/tasks", auth, async (req, res) => {
-  console.log(req.body);
   const { task, description, completed, username } = req.body;
   const newTask = new Task({
     task,
@@ -40,8 +39,6 @@ router.post("/tasks/fetch", auth, async (req, res) => {
 
 // editting a task or marking as complete
 router.put("/tasks/:id", async (req, res) => {
-  console.log(req.body);
-  const { task, description, completed, username } = req.body;
   try {
     // find the user with the given id
     const user = Task.findOne({ _id: req.params.id });

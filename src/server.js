@@ -13,9 +13,7 @@ const UserRoutes = require("./routes/User");
 const TaskRoutes = require("./routes/Tasks");
 
 mongoose
-  .connect(
-    "mongodb+srv://isaac:YZv5xlNvqwuJMa2Z@cluster0-zob1a.mongodb.net/test?retryWrites=true&w=majority"
-  )
+  .connect(process.env.DATABASE_CONNECTION_STRING)
   .then(() => console.log("Connected to mongo db succesfully"))
   .catch(error => console.log(error));
 
